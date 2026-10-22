@@ -131,20 +131,14 @@ This section outlines the development phases of the MARCOS project. Tasks marked
 - ✅ **Sensor Fusion:** Developed LIDAR + Depth sensor fusion and processing.
 - ✅ **Global Path Planning:** Integrated Dynamic A* with safety radius inflation.
 - ✅ **State Machine:** Implemented the INIT → TAKEOFF → NAVIGATE → REACHED states.
-- 🟨 **Smart Obstacle Navigator:** Core logic for adaptive speed and corridor centering is under development.
-- 🟨 **Exploration Strategy:** Planning exploration strategies to maximize coverage and reduce blind spots.
+- ✅ **Smart Obstacle Navigator:** Core logic for adaptive speed and corridor centering is under development.
+- ✅ **Exploration Strategy:** Planning exploration strategies to maximize coverage and reduce blind spots.
 
 ### Phase 3: Multi-Agent Swarm (Planned)
-- ⬜ **Multi-Drone Simulation:** Spawning and controlling multiple drones in the same Gazebo environment.
+- ✅ **Multi-Drone Simulation:** Spawning and controlling multiple drones in the same Gazebo environment.
+- ✅ **Human/Object Detection:** Integrating Computer Vision for target classification.
 - ⬜ **Shared World Model:** Developing the communication protocol for sharing maps and state information between agents.
 - ⬜ **Swarm Coordination Logic:** Implementing task allocation and cooperative exploration strategies.
-- ⬜ **Reinforcement Learning Integration:** Introduction of RL agents for swarm-level decision-making.
-
-### Phase 4: Advanced Capabilities & Deployment (Planned)
-- ⬜ **Human/Object Detection:** Integrating Computer Vision for target classification.
-- ⬜ **Advanced Mapping:** 3D voxel map generation and improved ghost clearing.
-- ⬜ **Hardware-in-the-loop (HITL):** Testing the software stack with real flight controllers.
-- ⬜ **Real Drone Deployment:** Transitioning the system to physical drones.
 
 ---
 
