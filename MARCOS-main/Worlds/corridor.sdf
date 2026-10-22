@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version="1.9">
+  <world name="default">
+    <physics type="ode">
+      <max_step_size>0.004</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+      <real_time_update_rate>250</real_time_update_rate>
+    </physics>
+
+    <plugin name="gz::sim::systems::Physics" filename="gz-sim-physics-system"/>
+    <plugin name="gz::sim::systems::UserCommands" filename="gz-sim-user-commands-system"/>
+    <plugin name="gz::sim::systems::SceneBroadcaster" filename="gz-sim-scene-broadcaster-system"/>
+    <plugin name="gz::sim::systems::Contact" filename="gz-sim-contact-system"/>
+    <plugin name="gz::sim::systems::Imu" filename="gz-sim-imu-system"/>
+    <plugin name="gz::sim::systems::AirPressure" filename="gz-sim-air-pressure-system"/>
+    <plugin name="gz::sim::systems::ApplyLinkWrench" filename="gz-sim-apply-link-wrench-system"/>
+    <plugin name="gz::sim::systems::NavSat" filename="gz-sim-navsat-system"/>
+    <plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+
+    <gui fullscreen="false">
+      <plugin filename="MinimalScene" name="3D View">
+        <gz-gui>
+          <title>3D View</title>
+          <property type="bool" key="showTitleBar">false</property>
+          <property type="string" key="state">docked</property>
+        </gz-gui>
+        <engine>ogre2</engine>
+        <scene>scene</scene>
+        <ambient_light>0.6 0.6 0.6</ambient_light>
+        <background_color>0.6 0.8 1.0</background_color>
+        <camera_pose>-15 0 25 0 0.9 0</camera_pose>
+      </plugin>
+
+      <plugin filename="GzSceneManager" name="Scene Manager">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+
+      <plugin filename="InteractiveViewControl" name="Interactive view control">
+        <gz-gui>
+          <property key="resizable" type="bool">false</property>
+          <property key="width" type="double">5</property>
+          <property key="height" type="double">5</property>
+          <property key="state" type="string">floating</property>
+          <property key="showTitleBar" type="bool">false</property>
+        </gz-gui>
+      </plugin>
+
+      <plugin filename="WorldControl" name="World control">
+        <gz-gui>
+          <title>World control</title>
+          <property type="bool" key="showTitleBar">0</property>
+          <property type="bool" key="resizable">0</property>
+          <property type="double" key="height">72</property>
+          <property type="double" key="width">121</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="left" target="left"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <play_pause>1</play_pause>
+        <step>1</step>
+        <start_paused>1</start_paused>
+      </plugin>
+
+      <plugin filename="WorldStats" name="World stats">
+        <gz-gui>
+          <title>World stats</title>
+          <property type="bool" key="showTitleBar">0</property>
+          <property type="bool" key="resizable">0</property>
+          <property type="double" key="height">110</property>
+          <property type="double" key="width">290</property>
+          <property type="double" key="z">1</property>
+          <property type="string" key="state">floating</property>
+          <anchors target="3D View">
+            <line own="right" target="right"/>
+            <line own="bottom" target="bottom"/>
+          </anchors>
+        </gz-gui>
+        <sim_time>1</sim_time>
+        <real_time>1</real_time>
+        <real_time_factor>1</real_time_factor>
+        <iterations>1</iterations>
+      </plugin>
+
+      <plugin name="Entity tree" filename="EntityTree"/>
+      <plugin filename="CameraTracking" name="Camera Tracking"/>
+    </gui>
+
+    <gravity>0 0 -9.8</gravity>
+    <magnetic_field>6e-06 2.3e-05 -4.2e-05</magnetic_field>
+    <atmosphere type="adiabatic"/>
+
+    <scene>
+      <grid>false</grid>
+      <ambient>0.6 0.6 0.6 1</ambient>
+      <background>0.6 0.8 1.0 1</background>
+      <shadows>true</shadows>
+      <sky>true</sky>
+    </scene>
+
+    <model name="course_ground">
+      <static>true</static>
+      <pose>15 0 -0.05 0 0 0</pose>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>40 6 0.1</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>40 6 0.1</size></box></geometry>
+          <material>
+            <ambient>0.7 0.6 0.5 1</ambient>
+            <diffuse>0.7 0.6 0.5 1</diffuse>
+            <specular>0.1 0.1 0.1 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.9</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <light name="sun_main" type="directional">
+      <pose>0 0 500 0 0 0</pose>
+      <cast_shadows>true</cast_shadows>
+      <intensity>1.0</intensity>
+      <direction>0.3 0.5 -0.8</direction>
+      <diffuse>1 1 1 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+    </light>
+
+    <light name="sun_fill_1" type="directional">
+      <pose>-10 10 10 0 0 0</pose>
+      <cast_shadows>false</cast_shadows>
+      <intensity>0.6</intensity>
+      <direction>0.5 -0.5 -0.5</direction>
+      <diffuse>0.8 0.8 0.9 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+    </light>
+
+    <light name="sun_fill_2" type="directional">
+      <pose>-10 -10 10 0 0 0</pose>
+      <cast_shadows>false</cast_shadows>
+      <intensity>0.6</intensity>
+      <direction>0.5 0.5 -0.5</direction>
+      <diffuse>0.8 0.8 0.9 1</diffuse>
+      <specular>0.1 0.1 0.1 1</specular>
+    </light>
+
+    <model name="wall_left_transparent">
+      <pose>15 3 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>30 0.2 5</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>30 0.2 5</size></box></geometry>
+          <material>
+            <ambient>0.1 0.1 0.2 0.3</ambient>
+            <diffuse>0.1 0.1 0.2 0.3</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.1</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_right_transparent">
+      <pose>15 -3 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="collision"><geometry><box><size>30 0.2 5</size></box></geometry></collision>
+        <visual name="visual">
+          <geometry><box><size>30 0.2 5</size></box></geometry>
+          <material>
+             <ambient>0.1 0.1 0.2 0.3</ambient>
+            <diffuse>0.1 0.1 0.2 0.3</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.1</roughness>
+                <metalness>0.0</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box_blocker_top_left">
+      <pose>5 2.5 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.5 2.5 5</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.5 2.5 5</size></box></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="box_blocker_bottom_right">
+      <pose>9 -2.5 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>2.5 2.5 5</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>2.5 2.5 5</size></box></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_blocker_right">
+      <pose>12 -1 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.5 4 5</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>1.5 4 5</size></box></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tall_cylinder_obstacle_1">
+      <pose>16 1.5 2 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><cylinder><radius>0.8</radius><length>4</length></cylinder></geometry></collision>
+        <visual name="v">
+          <geometry><cylinder><radius>0.8</radius><length>4</length></cylinder></geometry>
+          <material>
+            <ambient>0.85 0.85 0.85 1</ambient>
+            <diffuse>0.85 0.85 0.85 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.4</roughness>
+                <metalness>0.15</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tall_cylinder_obstacle_2">
+      <pose>16 -1.5 1.75 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><cylinder><radius>0.7</radius><length>3.5</length></cylinder></geometry></collision>
+        <visual name="v">
+          <geometry><cylinder><radius>0.7</radius><length>3.5</length></cylinder></geometry>
+          <material>
+            <ambient>0.85 0.85 0.85 1</ambient>
+            <diffuse>0.85 0.85 0.85 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.4</roughness>
+                <metalness>0.15</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tall_box_obstacle_1">
+      <pose>18.5 0.5 1.5 0 0 0.3</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.2 1.2 3</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>1.2 1.2 3</size></box></geometry>
+          <material>
+            <ambient>0.88 0.88 0.88 1</ambient>
+            <diffuse>0.88 0.88 0.88 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.35</roughness>
+                <metalness>0.12</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tall_box_obstacle_2">
+      <pose>21 -0.8 1.75 0 0 -0.4</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1 1.5 3.5</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>1 1.5 3.5</size></box></geometry>
+          <material>
+            <ambient>0.88 0.88 0.88 1</ambient>
+            <diffuse>0.88 0.88 0.88 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.35</roughness>
+                <metalness>0.12</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="tall_pillar_obstacle">
+      <pose>23.5 0.5 2 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>0.8 0.8 4</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>0.8 0.8 4</size></box></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.15</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wedge_left_tooth">
+      <static>true</static>
+      <pose>20 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry>
+            <polyline>
+              <height>5</height>
+              <point>-2 3</point>
+              <point>0 -0.5</point>
+              <point>2 3</point>
+            </polyline>
+          </geometry>
+        </collision>
+        <visual name="v">
+          <geometry>
+            <polyline>
+              <height>5</height>
+              <point>-2 3</point>
+              <point>0 -0.5</point>
+              <point>2 3</point>
+            </polyline>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wedge_right_tooth">
+      <static>true</static>
+      <pose>26 0 0 0 0 0</pose>
+      <link name="link">
+        <collision name="c">
+          <geometry>
+            <polyline>
+              <height>5</height>
+              <point>-2 -3</point>
+              <point>0 0.5</point>
+              <point>2 -3</point>
+            </polyline>
+          </geometry>
+        </collision>
+        <visual name="v">
+          <geometry>
+            <polyline>
+              <height>5</height>
+              <point>-2 -3</point>
+              <point>0 0.5</point>
+              <point>2 -3</point>
+            </polyline>
+          </geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="finish_center_post">
+      <pose>31 0 2.5 0 0 0</pose>
+      <static>true</static>
+      <link name="link">
+        <collision name="c"><geometry><box><size>1.5 2 5</size></box></geometry></collision>
+        <visual name="v">
+          <geometry><box><size>1.5 2 5</size></box></geometry>
+          <material>
+            <ambient>0.9 0.9 0.9 1</ambient>
+            <diffuse>0.9 0.9 0.9 1</diffuse>
+            <specular>0.5 0.5 0.5 1</specular>
+             <pbr>
+              <metal>
+                <roughness>0.3</roughness>
+                <metalness>0.1</metalness>
+              </metal>
+            </pbr>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <spherical_coordinates>
+      <surface_model>EARTH_WGS84</surface_model>
+      <world_frame_orientation>ENU</world_frame_orientation>
+      <latitude_deg>47.397971</latitude_deg>
+      <longitude_deg>8.546164</longitude_deg>
+      <elevation>0</elevation>
+    </spherical_coordinates>
+
+  </world>
+</sdf>

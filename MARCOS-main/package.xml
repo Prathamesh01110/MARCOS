@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd"
+            schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>autonomous_drone</name>
+  <version>0.0.1</version>
+  <description>Autonomous drone control with LiDAR + depth fusion</description>
+
+  <maintainer email="ajinkya@todo.todo">ajinkya</maintainer>
+  <license>MIT</license>
+
+  <!-- Core Python ROS2 + PX4 -->
+  <depend>rclpy</depend>
+  <depend>px4_msgs</depend>
+
+  <!-- Messaging stuff -->
+  <depend>geometry_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>visualization_msgs</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
+
+  <!-- Extra sensors/vision -->
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+  <depend>depthimage_to_laserscan</depend>
+
+  <!-- Optional mapping libs -->
+  <depend>octomap_msgs</depend>
+
+  <!-- Dev & QA -->
+  <test_depend>ament_copyright</test_depend>
+  <test_depend>ament_flake8</test_depend>
+  <test_depend>ament_pep257</test_depend>
+  <test_depend>python3-pytest</test_depend>
+
+  <export>
+    <build_type>ament_python</build_type>
+  </export>
+</package>

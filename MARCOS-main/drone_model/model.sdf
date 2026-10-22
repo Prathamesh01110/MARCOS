@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sdf version='1.9'>
+  <model name='x500_depth'>
+    
+    <include merge='true'>
+      <uri>x500</uri>
+    </include>
+    
+    <include merge='true'>
+      <uri>model://OakD-Lite</uri>
+      <pose>.12 .03 .242 0 0 0</pose>
+    </include>
+    <joint name="CameraJoint" type="fixed">
+      <parent>base_link</parent>
+      <child>OakD-Lite/base_link</child>
+      <pose relative_to="base_link">.12 .03 .242 0 0 0</pose>
+    </joint>
+    
+    <link name="lidar_link_custom">
+      <pose>0 0 0.35 0 0 0</pose>
+      
+      <inertial>
+        <mass>0.1</mass>
+        <inertia>
+          <ixx>0.000166667</ixx>
+          <iyy>0.000166667</iyy>
+          <izz>0.000166667</izz>
+        </inertia>
+      </inertial>
+      
+      <visual name="lidar_visual_custom"> 
+        <geometry>
+          <cylinder>
+            <radius>0.03</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <diffuse>0.1 0.1 0.1 1.0</diffuse>
+          <ambient>0.1 0.1 0.1 1.0</ambient>
+        </material>
+      </visual>
+      
+      <collision name="lidar_collision_custom">
+        <geometry>
+          <cylinder>
+            <radius>0.03</radius>
+            <length>0.04</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      
+      <sensor name='lidar_custom' type='gpu_lidar'>
+        <pose>0 0 0 0 0 0</pose>
+        <topic>/scan</topic> <always_on>1</always_on>
+        <visualize>true</visualize>
+        <update_rate>20</update_rate>
+        
+        <lidar>
+          <scan>
+            <horizontal>
+              <samples>360</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>1</samples>
+              <resolution>1</resolution>
+              <min_angle>0</min_angle>
+              <max_angle>0</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.20</min>
+            <max>25.0</max>
+            <resolution>0.01</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.01</stddev>
+          </noise>
+        </lidar>
+        
+        </sensor>
+    </link>
+    
+    <joint name="lidar_joint_custom" type="fixed">
+      <parent>base_link</parent>
+      <child>lidar_link_custom</child>
+    </joint>
+  </model>
+</sdf>
