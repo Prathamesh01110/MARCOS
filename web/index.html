@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MARCOS · Multi-Agent Reinforcement Learning for Cognitive Operational Swarms</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#12171a;--panel:#1a2125;--panel2:#212a2f;--line:#33414a;--tx:#d7ddd8;--dim:#8a9a9f;--amb:#e3a72f;--cy:#62b6c8;--red:#d2583f;--ok:#7fb069}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:72px}
+body{background:var(--bg);color:var(--tx);font:18px/1.65 'IBM Plex Sans',system-ui,sans-serif;min-height:100vh;
+background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:64px 64px;background-position:-1px -1px;background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at 30% 20%,transparent 0,var(--bg) 75%),rgba(18,23,26,.82);pointer-events:none;z-index:-1}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--amb);outline-offset:3px}
+.mono{font-family:'IBM Plex Mono',monospace}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:600;line-height:1.02;letter-spacing:.01em}
+header{position:sticky;top:0;z-index:10;background:rgba(18,23,26,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:32px;padding:0 40px;height:68px}
+.brand{font:700 32px 'Barlow Condensed';letter-spacing:.14em;display:flex;align-items:center;gap:10px}
+.brand i{width:14px;height:14px;border:2px solid var(--amb);display:block;position:relative}
+.brand i::after{content:"";position:absolute;inset:3px;background:var(--amb)}
+nav{display:flex;gap:4px;height:100%;overflow-x:auto}
+nav a{display:flex;align-items:center;padding:0 20px;font-size:16px;color:var(--dim);border-bottom:2px solid transparent;margin-top:2px}
+nav a:hover{color:var(--tx)}nav a.on{color:var(--tx);border-color:var(--amb)}
+.stat{margin-left:auto;font-size:13px;color:var(--dim);display:flex;gap:18px}
+.stat b{color:var(--ok);font-weight:500}
+.stat .d{display:inline-block;width:7px;height:7px;background:var(--ok);margin-right:6px;animation:p 2s infinite}
+@keyframes p{50%{opacity:.25}}
+.pg{display:none}.pg.on{display:block}
+.wrap{max-width:1480px;margin:0 auto;padding:0 40px}
+/* hero */
+.hero{position:relative;border-bottom:1px solid var(--line);overflow:hidden}
+.hero canvas{position:absolute;right:0;top:0;width:68%;height:100%;display:block;mask-image:linear-gradient(90deg,transparent,#000 22%);-webkit-mask-image:linear-gradient(90deg,transparent,#000 22%)}
+.hero .wrap{position:relative;min-height:calc(100vh - 68px);min-height:min(900px,calc(100vh - 68px));display:flex;flex-direction:column;justify-content:center;padding-top:60px;padding-bottom:60px}
+.hero h1{font-size:clamp(68px,10vw,168px);font-weight:700;max-width:7.5em;text-wrap:balance}
+.hero p.l{max-width:620px;margin:28px 0 44px;color:#aab6b3;font-size:22px}
+.btns{display:flex;gap:12px;flex-wrap:wrap}
+.btn{padding:16px 30px;font:500 17px;cursor:pointer; 'IBM Plex Sans';border:1px solid var(--line);background:var(--panel)}
+.btn.p{background:var(--amb);color:#14110a;border-color:var(--amb)}
+.btn:hover{border-color:var(--amb)}
+.hud{position:absolute;right:40px;bottom:32px;font-size:14px;color:var(--cy);text-align:right;line-height:1.7;background:rgba(18,23,26,.7);padding:8px 12px;border:1px solid var(--line)}
+.team-tag{margin-top:48px;font-size:13px;color:var(--dim)}
+/* sections */
+section{padding:128px 0;border-bottom:1px solid var(--line)}
+h2{font-size:clamp(46px,5.6vw,84px);max-width:14em;margin-bottom:16px}
+.sub{color:var(--dim);max-width:700px;margin-bottom:56px;font-size:20px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line)}
+.g4>div{background:var(--panel);padding:34px 30px}
+.g4 h3{font-size:34px;margin-bottom:10px}.g4 p{color:var(--dim);font-size:17px}
+.gap{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:start}
+.quote{border-left:3px solid var(--amb);padding:6px 0 6px 22px;font:500 38px/1.15 'Barlow Condensed';letter-spacing:.01em}
+.quote small{display:block;margin-top:12px;font:400 13px 'IBM Plex Mono';color:var(--dim)}
+.feat{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.feat div{background:var(--panel);padding:22px 26px;display:flex;justify-content:space-between;gap:20px;font-size:19px}
+.feat span{color:var(--dim);font-size:15px;text-align:right}
+/* pipeline */
+.pipe{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);background:var(--panel)}
+.pipe>div{padding:30px 24px;border-right:1px solid var(--line);position:relative;min-height:250px}
+.pipe>div:last-child{border:0}
+.pipe>div:not(:last-child)::after{content:"";position:absolute;right:-6px;top:30px;width:11px;height:11px;background:var(--panel);border-top:1px solid var(--amb);border-right:1px solid var(--amb);transform:rotate(45deg);z-index:1}
+.pipe h3{font-size:38px;color:var(--amb);margin-bottom:8px}.pipe p{font-size:17px;color:#a5b1ae}
+.pipe em{display:block;margin-top:14px;font:12px 'IBM Plex Mono';color:var(--dim);font-style:normal}
+.stack{margin-top:24px;font-size:13px;color:var(--dim);display:flex;flex-wrap:wrap;gap:8px}
+.stack span{border:1px solid var(--line);padding:4px 10px;background:var(--panel)}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:28px}
+.two ul{list-style:none;padding:0;border-top:1px solid var(--line)}
+.two li{font-size:18px;padding:18px 0;border-bottom:1px solid var(--line);color:#b6c1be}
+.two h3{font-size:42px;margin-bottom:14px}
+/* console */
+.con{padding:28px 0 60px}
+.bar{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;font-size:14px;color:var(--dim);padding:10px 14px;border:1px solid var(--line);background:var(--panel);margin-bottom:14px}
+.cg{display:grid;grid-template-columns:2fr 1fr;gap:14px}
+.cg3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+.pn{background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column}
+.pn>h3{font:500 14px 'IBM Plex Mono';padding:12px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;color:var(--tx);letter-spacing:0}
+.pn>h3 span{color:var(--dim)}
+.pn canvas{width:100%;display:block}
+table{width:100%;border-collapse:collapse;font:15px 'IBM Plex Mono'}
+td,th{padding:12px 18px;border-bottom:1px solid var(--line);text-align:left;font-weight:400}
+th{color:var(--dim)}
+.tg{display:inline-block;padding:1px 8px;border:1px solid}
+.log{font:13px/1.9 'IBM Plex Mono';color:var(--dim);padding:12px 18px;height:190px;overflow:hidden}
+.log b{color:var(--cy);font-weight:400}
+.note{margin-top:14px;font-size:13px;color:var(--dim)}
+/* team */
+.tm{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:40px}
+.card{background:var(--panel);border:1px solid var(--line)}
+.ph{aspect-ratio:4/5;position:relative;background:var(--panel2);display:grid;place-items:center;overflow:hidden}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:grayscale(.55) contrast(1.05)}
+.ph .in{font:700 76px 'Barlow Condensed';color:var(--line)}
+.ph i{position:absolute;width:18px;height:18px;border:2px solid var(--amb);z-index:2}
+.ph i:nth-of-type(1){left:10px;top:10px;border-right:0;border-bottom:0}.ph i:nth-of-type(2){right:10px;top:10px;border-left:0;border-bottom:0}
+.ph i:nth-of-type(3){left:10px;bottom:10px;border-right:0;border-top:0}.ph i:nth-of-type(4){right:10px;bottom:10px;border-left:0;border-top:0}
+.card .t{padding:22px 24px 28px;border-top:1px solid var(--line)}
+.card h3{font-size:36px}.card .r{color:var(--amb);font-size:15px;margin:2px 0 10px}.card p{font-size:16px;color:var(--dim)}
+footer{padding:40px 0;font-size:15px;color:var(--dim)}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:960px){.hero canvas{width:100%;opacity:.45;mask-image:none;-webkit-mask-image:none}.g4,.tm{grid-template-columns:1fr 1fr}.gap,.two,.cg{grid-template-columns:1fr}.cg3{grid-template-columns:1fr}.pipe{grid-template-columns:1fr}.pipe>div{border-right:0;border-bottom:1px solid var(--line);min-height:0}.pipe>div::after{display:none}.stat{display:none}header{gap:12px;padding:0 14px}nav a{padding:0 9px}.hud{display:none}}
+@media(max-width:520px){.g4,.tm{grid-template-columns:1fr}.brand{font-size:21px}}
+
+.ctl button{font:500 14px 'IBM Plex Mono';background:var(--panel2);color:var(--tx);border:1px solid var(--line);padding:7px 14px;margin-right:8px;cursor:pointer}
+.ctl button:hover{border-color:var(--amb)}
+.gv{display:grid;grid-template-columns:320px 1fr 420px;gap:12px;padding:12px;height:calc(100vh - 68px);min-height:760px}
+.gv aside,.gc{display:flex;flex-direction:column;gap:12px;min-height:0}.gc{display:grid;grid-template-rows:1fr 210px}
+.gv>aside:first-child{overflow:auto}.gmw{position:relative;flex:1;min-height:360px}.gmw canvas{position:absolute;inset:0;width:100%;height:100%}
+.gc>.pn:first-child{min-height:0}.gr .pn:last-child{flex:1}
+.tr{display:flex;justify-content:space-between;gap:10px;width:100%;background:none;color:var(--tx);border:0;border-left:3px solid transparent;text-align:left;padding:8px 16px;font:14px 'IBM Plex Mono';cursor:pointer}
+.tr:hover{background:var(--panel2)}.tr.on{background:var(--panel2);border-color:var(--amb)}.tr.h{color:var(--dim);cursor:default}.tr.h:hover{background:none}
+.tr i{font-style:normal;font-size:12px;color:var(--dim)}
+#det{padding:6px 0}#det div{display:flex;justify-content:space-between;padding:7px 18px;font:14px 'IBM Plex Mono';border-bottom:1px solid var(--line)}#det span{color:var(--dim)}
+.src{display:grid;grid-template-columns:340px 1fr;gap:14px}#ft{max-height:560px;overflow:auto}
+pre{font:14px/1.7 'IBM Plex Mono';padding:20px 24px;overflow:auto;color:#c4d1cc;max-height:560px;tab-size:4}pre.rn{border:1px solid var(--line);background:var(--panel);max-height:none}
+@media(max-width:1100px){.gv{grid-template-columns:1fr;height:auto}.gc{grid-template-rows:520px 210px}.src{grid-template-columns:1fr}}
+</style></head><body>
+<header>
+<a class="brand" href="#home"><i></i>MARCOS</a>
+<nav id="nav"><a href="#home">Overview</a><a href="#system">System</a><a href="#console">Console</a><a href="#godview">God view</a><a href="#source">Source</a><a href="#team">Team</a></nav>
+<div class="stat mono"><span><i class="d"></i><b>SIM LINK</b></span><span>3 UAV</span><span>PX4 SITL</span></div>
+</header>
+
+<main>
+<!-- HOME -->
+<div class="pg" id="p-home">
+<div class="hero"><canvas id="hc"></canvas>
+<div class="wrap">
+<h1>Eyes where GPS can't reach.</h1>
+<p class="l">A swarm of autonomous UAVs that maps unknown, GPS-denied buildings and tunnels in real time, so nobody has to walk in blind.</p>
+<div class="btns"><a class="btn p" href="#godview">Open god view</a><a class="btn" href="#system">See the architecture</a></div>
+<p class="team-tag mono">Multi-Agent Reinforcement Learning for Cognitive Operational Swarms · SJCEM Palghar · 2026-27</p>
+</div>
+<div class="hud mono" id="hud"></div></div>
+
+<section><div class="wrap">
+<h2>Four ways a mission goes wrong</h2>
+<p class="sub">The places that matter most are the ones we can't see into.</p>
+<div class="g4">
+<div><h3>Unknown terrain</h3><p>No map. No visibility. Nobody knows what is behind the door.</p></div>
+<div><h3>GPS denied</h3><p>Underground, in forests and under rubble, drones lose their position.</p></div>
+<div><h3>Too risky</h3><p>Soldiers should not be the first ones through.</p></div>
+<div><h3>One drone is not enough</h3><p>Short endurance and a narrow view. Swarms add chaos when comms and coordination fail.</p></div>
+</div></div></section>
+
+<section><div class="wrap gap">
+<div><h2>Built for the gaps others skip</h2>
+<div class="quote">UAV navigation is built for large open areas. Tight spaces, close gaps and doorways are left unsolved.<small>Chang et al., Robotics and Autonomous Systems, 2023</small></div></div>
+<div class="feat">
+<div>Tight-gap navigation<span>Narrow corridors, close gaps</span></div>
+<div>Fast path planning<span>Replans about twice a second</span></div>
+<div>Map generation<span>Live 2.5D occupancy grid</span></div>
+<div>Live dashboard<span>Map, path and pose in RViz2</span></div>
+<div>Swarm-ready<span>3 UAVs in formation, Gazebo</span></div>
+</div></div></section>
+
+<section><div class="wrap"><h2>Five layers, each one replaceable</h2>
+<p class="sub">Sensors in, flight commands out. Every layer talks over ROS 2 topics.</p>
+<div class="pipe">
+<div><h3>Perception</h3><p>LiDAR and depth in three sectors.</p></div>
+<div><h3>Mapping</h3><p>Live 2.5D occupancy grid.</p></div>
+<div><h3>Planning</h3><p>Dynamic A*, replans twice a second.</p></div>
+<div><h3>Control</h3><p>State machine on PX4 Offboard.</p></div>
+<div><h3>Coordination</h3><p>Shared maps. MARL planned.</p></div></div>
+<div class="btns" style="margin-top:36px"><a class="btn" href="#system">Read the architecture</a><a class="btn" href="#source">Browse the source</a></div></div></section>
+
+<section><div class="wrap"><h2>What the swarm has done so far</h2>
+<p class="sub">Measured in simulation on Gazebo Harmonic with PX4 SITL.</p>
+<div class="g4">
+<div><h3>3 UAVs</h3><p>Flying in formation, from one launch file.</p></div>
+<div><h3>2 Hz</h3><p>Path replans while moving through tight gaps.</p></div>
+<div><h3>No GPS</h3><p>Position comes from onboard sensing only.</p></div>
+<div><h3 id="hn">0%</h3><p>Of the hero map known right now, live.</p></div>
+</div></div></section>
+
+<section><div class="wrap gap">
+<div><h2>See the whole mission in one view</h2>
+<p class="sub">God view puts every drone, zone and person it has found on one map, with a tree of entities on the left and a graph of who sees what on the right. Click anything to follow it.</p>
+<div class="btns"><a class="btn p" href="#godview">Open god view</a><a class="btn" href="#console">Open console</a></div></div>
+<div class="feat">
+<div>Entity tree<span>Swarm, targets, zones</span></div>
+<div>Tactical map<span>Live coverage and contacts</span></div>
+<div>Link graph<span>UAV to person, UAV to zone</span></div>
+<div>Track history<span>Confidence over time</span></div>
+</div></div></section>
+
+<section style="border:0"><div class="wrap">
+<h2>Built by four students at SJCEM Palghar</h2>
+<p class="sub">Guide: Mr. Adil Shaikh. Simulation only, with a human in the loop.</p>
+<div class="btns"><a class="btn p" href="#team">Meet the team</a><a class="btn" href="#source">View the source</a></div></div></section>
+</div>
+
+<!-- SYSTEM -->
+<div class="pg" id="p-system">
+<section><div class="wrap">
+<h2>Five layers. Swap any one without touching the rest.</h2>
+<p class="sub">Each layer talks to the next through ROS 2 topics, so a better planner or a new sensor drops in without a rewrite.</p>
+<div class="pipe">
+<div><h3>Perception</h3><p>LiDAR and depth, split into left, front and right sectors.</p><em>sensor → sectors</em></div>
+<div><h3>Mapping</h3><p>2.5D occupancy grid with ghost clearing for moving obstacles.</p><em>sectors → grid</em></div>
+<div><h3>Planning</h3><p>Dynamic A* replans at about 2 Hz. A B-spline smooths the route.</p><em>grid → path</em></div>
+<div><h3>Control</h3><p>State machine running on PX4 Offboard mode.</p><em>path → setpoints</em></div>
+<div><h3>Coordination</h3><p>Shared maps now. Multi-agent reinforcement learning is planned.</p><em>map ⇄ map</em></div>
+</div>
+<div class="stack mono"><span>ROS 2 Humble</span><span>PX4 SITL</span><span>Gazebo Harmonic</span><span>Micro XRCE-DDS</span><span>RViz2</span><span>QGroundControl</span><span>Runs on CPU and GPU</span></div>
+</div></section>
+<section><div class="wrap two">
+<div><h3>What it delivers</h3><ul><li>See the unseen. Map blind spots with no one at risk.</li><li>No GPS needed. Underground, forest, rubble.</li><li>Redundancy. The mission survives a lost drone.</li></ul></div>
+<div><h3>How we build it</h3><ul><li>Modular. Upgrade any layer.</li><li>Reproducible. Open source, public code.</li><li>Fair evaluation. Fixed metrics and scenarios.</li><li>Research. Review paper submitted, 5 gaps found.</li><li>Ethical. Simulation only, with human oversight.</li></ul></div>
+</div></section>
+<section><div class="wrap"><h2>Status</h2><div class="g4" style="margin-top:28px">
+<div><h3 style="color:var(--ok)">Done</h3><p>Single UAV, end to end.</p></div>
+<div><h3 style="color:var(--ok)">Done</h3><p>3-UAV formations in Gazebo.</p></div>
+<div><h3 style="color:var(--amb)">Planned</h3><p>MARL coordination policy.</p></div>
+<div><h3 style="color:var(--amb)">Planned</h3><p>Shared map fusion across the swarm.</p></div></div></div></section>
+</div>
+
+<!-- CONSOLE -->
+<div class="pg" id="p-console"><div class="wrap con">
+<div class="bar mono"><span>MISSION  MARCOS-SIM-01</span><span>WORLD  corridor_rooms</span><span>FRAME  map</span><span id="clk">T+00:00</span></div>
+<div class="bar mono ctl"><span><button id="cp">Pause</button><button id="cs">Speed 1x</button><button id="cf">Focus UAV-1</button><button id="cr">Reset view</button></span><span>Drag the map to rotate</span></div>
+<div class="cg">
+<div class="pn"><h3>2.5D occupancy map<span>wireframe · drag to rotate</span></h3><canvas id="iso" width="900" height="520"></canvas></div>
+<div class="pn"><h3>Swarm state<span>3 of 3 linked</span></h3>
+<table><tr><th>UAV</th><th>State</th><th>Battery</th></tr><tbody id="tb"></tbody></table>
+<h3 style="border-top:1px solid var(--line)">Event log<span>/marcos/events</span></h3><div class="log" id="log"></div></div>
+</div>
+<div class="cg3">
+<div class="pn"><h3>Replan latency<span>ms</span></h3><canvas id="g1" width="420" height="190"></canvas></div>
+<div class="pn"><h3>Map coverage<span>% of cells known</span></h3><canvas id="g2" width="420" height="190"></canvas></div>
+<div class="pn"><h3>LiDAR sectors<span id="fl">UAV-1 · m to nearest obstacle</span></h3><canvas id="g3" width="420" height="190"></canvas></div>
+</div>
+<p class="note">All figures on this page are generated in your browser from the simulated scene. They show the layout of the console, not recorded flight data. Connect it to a rosbridge feed to show real telemetry.</p>
+</div></div>
+
+<!-- GOD VIEW -->
+<div class="pg" id="p-godview"><div class="gv">
+<aside class="pn"><h3>Entities<span>click to select</span></h3><div id="tree"></div></aside>
+<div class="gc"><div class="pn"><h3>Tactical view<span id="gmeta"></span></h3><div class="gmw"><canvas id="gm"></canvas></div></div>
+<div class="pn"><h3>Contacts feed<span>simulated persons only</span></h3><div class="log" id="gev"></div></div></div>
+<aside class="gr"><div class="pn"><h3>Link graph<span>who sees what</span></h3><canvas id="gg" width="560" height="400"></canvas></div>
+<div class="pn"><h3 id="dt">Selected</h3><div id="det"></div><canvas id="gh" width="560" height="170"></canvas></div></aside>
+</div></div>
+
+<!-- SOURCE -->
+<div class="pg" id="p-source"><div class="wrap" style="padding-top:64px;padding-bottom:100px">
+<h2>Source</h2><p class="sub">The ROS 2 workspace, layer by layer. The excerpts below are short samples that show the structure of each package.</p>
+<div class="bar mono ctl"><span id="rl">Repository link not set</span><span><button id="rb">Open repository</button><button id="cc">Copy file</button></span></div>
+<div class="src"><div class="pn"><h3>marcos_ws/src<span>files</span></h3><div id="ft"></div></div>
+<div class="pn"><h3 id="fn">file</h3><pre id="code"></pre></div></div>
+<div class="two" style="margin-top:40px"><div><h3>Topics</h3><table><tr><th>Topic</th><th>From</th><th>To</th></tr>
+<tr><td>/uav1/sectors</td><td>perception</td><td>mapping</td></tr><tr><td>/uav1/grid</td><td>mapping</td><td>planning</td></tr>
+<tr><td>/uav1/path</td><td>planning</td><td>control</td></tr><tr><td>/uav1/setpoint</td><td>control</td><td>PX4</td></tr>
+<tr><td>/swarm/map_share</td><td>all UAVs</td><td>all UAVs</td></tr></table></div>
+<div><h3>Run it</h3><pre class="rn">ros2 launch bringup swarm3.launch.py
+ros2 launch bringup rviz.launch.py</pre></div></div>
+</div></div>
+
+<!-- TEAM -->
+<div class="pg" id="p-team"><section style="border:0"><div class="wrap">
+<h2>The team</h2>
+<p class="sub">Guide: Mr. Adil Shaikh · St. John College of Engineering and Management, Palghar</p>
+<div class="tm" id="tm"></div>
+<p class="note">To add photos, put four images in a folder named <span class="mono">photos</span> next to this file: mohit.jpg, prathamesh.jpg, satyaprakash.jpg, adarsh.jpg.</p>
+</div></section></div>
+</main>
+<footer><div class="wrap"><span>MARCOS · Final-year project, 2026-27 · Simulation only</span><span class="mono">Mohit Kattungal · Prathamesh Jakkula · Satyaprakash Gupta · Adarsh Singh</span></div></footer>
+
+<script>
+const $=s=>document.querySelector(s),RM=matchMedia('(prefers-reduced-motion:reduce)').matches;
+/* router */
+let cur='home';
+function go(h){if(!document.getElementById('p-'+h))h='home';cur=h;
+document.querySelectorAll('.pg').forEach(p=>p.classList.toggle('on',p.id==='p-'+h));
+document.querySelectorAll('#nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+h));
+try{history.replaceState(null,'','#'+h)}catch(e){}scrollTo(0,0);setTimeout(()=>{fit(hc);fit($('#gm'))},30)}
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(a){e.preventDefault();go(a.getAttribute('href').slice(1))}});
+addEventListener('hashchange',()=>go(location.hash.slice(1)));
+addEventListener('resize',()=>{fit(hc);fit($('#gm'))});
+/* team */
+const T=[['Mohit Kattungal','MK','mohit','Modeling worlds and documentation','Builds the Gazebo worlds the swarm trains and tests in, and keeps the project record.'],
+['Prathamesh Jakkula','PJ','prathamesh','Path planning and 3D map','Dynamic A* planner and the live 2.5D occupancy grid.'],
+['Satyaprakash Gupta','SG','satyaprakash','PX4 configuration and offboard control','Flight stack setup and the offboard state machine.'],
+['Adarsh Singh','AS','adarsh','Depth sensing, testing and literature','Depth perception, test scenarios and the review paper.']];
+$('#tm').innerHTML=T.map(t=>`<div class="card"><div class="ph"><span class="in">${t[1]}</span><img src="photos/${t[2]}.jpg" alt="${t[0]}" onerror="this.remove()"><i></i><i></i><i></i><i></i></div><div class="t"><h3>${t[0]}</h3><div class="r">${t[3]}</div><p>${t[4]}</p></div></div>`).join('');
+/* shared world: 60x34 grid */
+const W=60,H=34,walls=[];
+const R=(x,y,w,h)=>walls.push([x,y,w,h]);
+R(0,0,W,1);R(0,H-1,W,1);R(0,0,1,H);R(W-1,0,1,H);
+function vw(x,gaps){let y=0;for(const[a,b]of gaps.concat([[H,H]])){if(a>y)R(x,y,1,a-y);y=b;}}
+vw(15,[[6,9],[22,25]]);vw(30,[[14,17],[28,31]]);vw(45,[[8,11],[24,27]]);R(15,17,6,1);R(23,17,7,1);
+const solid=new Uint8Array(W*H);walls.forEach(([x,y,w,h])=>{for(let i=x;i<x+w;i++)for(let j=y;j<y+h;j++)solid[j*W+i]=1});
+const P=[[[5,7],[15.5,7.5],[22,8],[22,15],[30.5,15.5],[38,12],[45.5,9.5],[52,9],[56,15]],
+[[5,25],[15.5,23.5],[24,24],[22,19],[22,14],[30.5,15.5],[36,29],[45.5,25.5],[52,26],[56,30]],
+[[6,14],[10,10],[15.5,7.5],[24,5],[30.5,15.5],[38,20],[45.5,25.5],[52,28],[56,20]]];
+const known=new Uint8Array(W*H),CL=['#e3a72f','#62b6c8','#7fb069'];
+const D=P.map((p,i)=>{let L=[0];for(let k=1;k<p.length;k++)L.push(L[k-1]+Math.hypot(p[k][0]-p[k-1][0],p[k][1]-p[k-1][1]));return{p,L,s:i*9,tr:[]}});
+function at(d,s){const T=d.L[d.L.length-1];s=s%(2*T);if(s>T)s=2*T-s;let k=1;while(d.L[k]<s)k++;const f=(s-d.L[k-1])/(d.L[k]-d.L[k-1]||1),a=d.p[k-1],b=d.p[k];return[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,k]}
+function reveal(x,y){for(let j=-4;j<=4;j++)for(let i=-4;i<=4;i++)if(i*i+j*j<=16){const a=Math.round(x)+i,b=Math.round(y)+j;if(a>=0&&b>=0&&a<W&&b<H)known[b*W+a]=1}}
+let sim=0;function step(dt){sim+=dt;moveP();D.forEach((d,i)=>{const[x,y]=at(d,d.s+sim*3.2);reveal(x,y);d.x=x;d.y=y;if(!d.tr.length||Math.hypot(d.tr[d.tr.length-1][0]-x,d.tr[d.tr.length-1][1]-y)>.6){d.tr.push([x,y]);if(d.tr.length>40)d.tr.shift()}})}
+const cov=()=>{let n=0,t=0;for(let i=0;i<W*H;i++){if(!solid[i]){t++;n+=known[i]}}return n/t*100}
+/* hero canvas */
+const hc=$('#hc'),hx=hc.getContext('2d');
+function fit(c){const r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;}
+function drawHero(){const w=hc.width,h=hc.height,cs=Math.max(w/W,h/H),ox=(w-cs*W)/2,oy=(h-cs*H)/2;hx.clearRect(0,0,w,h);
+for(let j=0;j<H;j++)for(let i=0;i<W;i++){const k=j*W+i,x=ox+i*cs,y=oy+j*cs;
+if(known[k]){hx.fillStyle=solid[k]?'#9fb0ad':'rgba(98,182,200,.13)';hx.fillRect(x,y,cs-1,cs-1)}else{hx.fillStyle='rgba(120,140,148,.07)';hx.fillRect(x+cs/2-1,y+cs/2-1,2,2)}}
+D.forEach((d,n)=>{hx.strokeStyle=CL[n];hx.lineWidth=2*devicePixelRatio;hx.globalAlpha=.5;hx.beginPath();d.tr.forEach((q,i)=>i?hx.lineTo(ox+q[0]*cs,oy+q[1]*cs):hx.moveTo(ox+q[0]*cs,oy+q[1]*cs));hx.stroke();
+hx.globalAlpha=.9;hx.setLineDash([6,6]);hx.beginPath();hx.moveTo(ox+d.x*cs,oy+d.y*cs);const[,,k]=at(d,d.s+sim*3.2);for(let m=k;m<Math.min(k+2,d.p.length);m++)hx.lineTo(ox+d.p[m][0]*cs,oy+d.p[m][1]*cs);hx.stroke();hx.setLineDash([]);hx.globalAlpha=1;
+const x=ox+d.x*cs,y=oy+d.y*cs,r=cs*1.1;hx.strokeStyle=CL[n];hx.fillStyle='#12171a';hx.lineWidth=2*devicePixelRatio;hx.beginPath();hx.rect(x-r/2,y-r/2,r,r);hx.fill();hx.stroke();
+hx.fillStyle=CL[n];hx.font=`${11*devicePixelRatio}px IBM Plex Mono`;hx.fillText('UAV-'+(n+1),x+r,y-r/2)});
+$('#hud').innerHTML=`MAP KNOWN ${cov().toFixed(0)}%<br>REPLAN 2 Hz · A*<br>GPS: DENIED`}
+/* console */
+const iso=$('#iso'),ix=iso.getContext('2d');let ang=.7,drag=null;
+iso.onpointerdown=e=>{drag=e.clientX;iso.setPointerCapture(e.pointerId)};iso.onpointermove=e=>{if(drag!==null){ang+=(e.clientX-drag)*.008;drag=e.clientX}};iso.onpointerup=()=>drag=null;
+function pr(x,y,z){x-=W/2;y-=H/2;const c=Math.cos(ang),s=Math.sin(ang),a=x*c-y*s,b=x*s+y*c;return[iso.width/2+a*11.5,iso.height*.56+b*5.2-z*9]}
+function drawIso(){ix.clearRect(0,0,iso.width,iso.height);ix.lineWidth=1;
+ix.strokeStyle='#33414a';for(let i=0;i<=W;i+=5){let a=pr(i,0,0),b=pr(i,H,0);ix.beginPath();ix.moveTo(...a);ix.lineTo(...b);ix.stroke()}for(let j=0;j<=H;j+=5){let a=pr(0,j,0),b=pr(W,j,0);ix.beginPath();ix.moveTo(...a);ix.lineTo(...b);ix.stroke()}
+walls.forEach(([x,y,w,h],n)=>{if(n<4&&0)return;const z=3,v=[[x,y],[x+w,y],[x+w,y+h],[x,y+h]];let kn=0;for(let i=x;i<x+w;i+=2)for(let j=y;j<y+h;j+=2)kn+=known[Math.min(j,H-1)*W+Math.min(i,W-1)];
+ix.strokeStyle=kn?'#62b6c8':'#3d4c55';ix.fillStyle=kn?'rgba(98,182,200,.08)':'transparent';
+const b=v.map(q=>pr(q[0],q[1],0)),t=v.map(q=>pr(q[0],q[1],z));ix.beginPath();t.forEach((q,i)=>i?ix.lineTo(...q):ix.moveTo(...q));ix.closePath();ix.fill();ix.stroke();ix.beginPath();for(let i=0;i<4;i++){ix.moveTo(...b[i]);ix.lineTo(...t[i])}ix.stroke()});
+D.forEach((d,n)=>{ix.strokeStyle=CL[n];ix.beginPath();d.tr.forEach((q,i)=>{const p=pr(q[0],q[1],2);i?ix.lineTo(...p):ix.moveTo(...p)});ix.stroke();
+const g=pr(d.x,d.y,0),a=pr(d.x,d.y,2);ix.setLineDash([3,3]);ix.beginPath();ix.moveTo(...g);ix.lineTo(...a);ix.stroke();ix.setLineDash([]);ix.fillStyle=CL[n];ix.fillRect(a[0]-4,a[1]-4,8,8);ix.font='11px IBM Plex Mono';ix.fillText('UAV-'+(n+1),a[0]+9,a[1]+4)})}
+const hist={lat:[],cov:[]};
+function line(c,data,col,lo,hi,u){const x=c.getContext('2d'),w=c.width,h=c.height;x.clearRect(0,0,w,h);x.strokeStyle='#33414a';x.fillStyle='#8a9a9f';x.font='11px IBM Plex Mono';x.lineWidth=1;
+for(let i=0;i<=4;i++){const y=14+(h-34)*i/4;x.beginPath();x.moveTo(40,y);x.lineTo(w-8,y);x.stroke();x.fillText(Math.round(hi-(hi-lo)*i/4),4,y+4)}
+x.strokeStyle=col;x.lineWidth=2;x.beginPath();data.forEach((v,i)=>{const px=40+(w-48)*i/79,py=14+(h-34)*(1-(v-lo)/(hi-lo));i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+x.fillStyle=col;x.fillText(data.length?data[data.length-1].toFixed(0)+u:'',w-70,12)}
+function bars(){const c=$('#g3'),x=c.getContext('2d'),w=c.width,h=c.height;x.clearRect(0,0,w,h);const d=D[focus],[,,k]=at(d,d.s+sim*3.2),nx=d.p[k],a=Math.atan2(nx[1]-d.y,nx[0]-d.x);
+const ray=r=>{let l=0;for(;l<12;l+=.25){const i=Math.round(d.x+Math.cos(r)*l),j=Math.round(d.y+Math.sin(r)*l);if(solid[j*W+i])break}return l};
+[['Left',a-1],['Front',a],['Right',a+1]].forEach((s,i)=>{const v=ray(s[1]),bw=70,x0=50+i*120,bh=(h-50)*v/12;x.fillStyle=v<2?'#d2583f':'#62b6c8';x.fillRect(x0,h-26-bh,bw,bh);x.fillStyle='#d7ddd8';x.font='12px IBM Plex Mono';x.fillText(v.toFixed(1)+' m',x0+10,h-30-bh);x.fillStyle='#8a9a9f';x.fillText(s[0],x0+16,h-8)})}
+const names=['TRANSIT','SCAN','TRANSIT'],bat=[100,100,100],LG=['Replan complete, path length ','Gap detected, width ','Ghost cells cleared: ','Offboard setpoint streamed','Map merged from UAV-'];
+function panel(){$('#tb').innerHTML=D.map((d,i)=>{const[,,k]=at(d,d.s+sim*3.2),st=['TRANSIT','SCAN','HOLD'][(k+i)%3],c=st=='HOLD'?'var(--amb)':'var(--ok)';return`<tr><td style="color:${CL[i]}">UAV-${i+1}</td><td><span class="tg" style="color:${c}">${st}</span></td><td>${(98-sim*.12-i*2).toFixed(0)}%</td></tr>`}).join('');
+const t=Math.floor(sim),m=String(Math.floor(t/60)).padStart(2,'0'),s=String(t%60).padStart(2,'0');$('#clk').textContent=`T+${m}:${s}`}
+let lc=0;function logl(){const i=Math.random()*3|0,m=Math.random()*5|0,v=m==0?(20+Math.random()*30).toFixed(1)+' m':m==1?(0.6+Math.random()*.8).toFixed(1)+' m':m==2?(Math.random()*20|0):m==4?(1+(i+1)%3):'';
+$('#log').insertAdjacentHTML('beforeend',`<div><b>UAV-${i+1}</b> ${LG[m]}${v}</div>`);const l=$('#log');while(l.children.length>7)l.firstChild.remove();}
+
+const ZN=[['Z-A',1,15],['Z-B',16,29],['Z-C',31,44],['Z-D',46,58]];
+const PT=[{id:'P-01',p:[[18,4],[27,4],[27,12],[18,12]],spd:1.4},{id:'P-02',p:[[52,20]],spd:0},{id:'P-03',p:[[8,28]],spd:0}];
+PT.forEach(t=>{t.L=[0];for(let k=1;k<t.p.length;k++)t.L.push(t.L[k-1]+Math.hypot(t.p[k][0]-t.p[k-1][0],t.p[k][1]-t.p[k-1][1]));t.s=0;t.tr=[];t.conf=0;t.det=0;t.seen=null;t.by=null});
+let warm=true,sel='P-01',GE=[],HS={},paused=false,speed=1,focus=0;
+function moveP(){PT.forEach(t=>{if(t.spd){const q=at(t,sim*t.spd);t.x=q[0];t.y=q[1]}else{t.x=t.p[0][0];t.y=t.p[0][1]}
+let best=null,bd=7;D.forEach((d,i)=>{const r=Math.hypot(d.x-t.x,d.y-t.y);if(r<bd){bd=r;best=i}});const dt=best!==null;
+t.conf=dt?Math.min(1,t.conf+.03):Math.max(0,t.conf-.004);
+if(!warm){if(dt&&!t.det)GE.push([sim,'Contact '+t.id+' by UAV-'+(best+1)]);if(!dt&&t.det)GE.push([sim,'Lost '+t.id+', last seen at '+t.x.toFixed(0)+','+t.y.toFixed(0)]);if(dt&&t.seen===null)t.seen=sim;
+if(dt){t.lx=t.x;t.ly=t.y;if(!t.tr.length||Math.hypot(t.tr[t.tr.length-1][0]-t.x,t.tr[t.tr.length-1][1]-t.y)>.5){t.tr.push([t.x,t.y]);if(t.tr.length>60)t.tr.shift()}}}
+t.det=dt;t.by=best})}
+const zc=z=>{let n=0,m=0;for(let j=1;j<H-1;j++)for(let i=z[1];i<=z[2];i++){const k=j*W+i;if(!solid[k]){m++;n+=known[k]}}return n/m*100};
+const peers=d=>Math.min(...D.filter(o=>o!==d).map(o=>Math.hypot(o.x-d.x,o.y-d.y)));
+function ent(id){let t=PT.find(x=>x.id===id);if(t)return{k:'person',o:t,x:t.x,y:t.y};const m=/^UAV-(\d)/.exec(id);if(m){const d=D[m[1]-1];return{k:'uav',o:d,x:d.x,y:d.y}}const z=ZN.find(x=>x[0]===id);return z?{k:'zone',o:z,x:(z[1]+z[2])/2,y:17}:null}
+const status=t=>t.det?'TRACKING':t.seen!==null?'LAST SEEN':'UNDETECTED';
+function tree(){const R=[['MARCOS-SIM-01',0],['Swarm',1],...D.map((d,i)=>['UAV-'+(i+1),2,'linked']),['LiDAR + depth',3],['Targets',1],...PT.map(t=>[t.id,2,status(t)]),['Zones',1],...ZN.map(z=>[z[0],2,zc(z).toFixed(0)+'%'])];
+$('#tree').innerHTML=R.map(r=>{const c=ent(r[0]);return`<button class="tr${c?'':' h'}${sel===r[0]?' on':''}" ${c?`data-id="${r[0]}"`:''} style="padding-left:${16+r[1]*16}px"><span>${r[0]}</span><i>${r[2]||''}</i></button>`}).join('')}
+$('#tree').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(b){sel=b.dataset.id;tree();dets()}});
+function dets(){const e=ent(sel),o=e.o;$('#dt').firstChild.nodeValue='Selected: '+sel;let r=[['Type',e.k],['Position',e.x.toFixed(1)+', '+e.y.toFixed(1)+' cells']];
+if(e.k=='person')r.push(['Status',status(o)],['Confidence',(o.conf*100).toFixed(0)+'%'],['First contact',o.seen===null?'none':'T+'+o.seen.toFixed(0)+'s'],['Seen by',o.by===null?'none':'UAV-'+(o.by+1)]);
+if(e.k=='uav')r.push(['State','TRANSIT'],['Nearest peer',peers(o).toFixed(1)+' cells'],['Sees',PT.filter(t=>t.by===D.indexOf(o)).map(t=>t.id).join(', ')||'nothing']);
+if(e.k=='zone')r.push(['Mapped',zc(o).toFixed(0)+'%'],['Persons found',PT.filter(t=>t.seen!==null&&t.x>=o[1]&&t.x<=o[2]).length]);
+$('#det').innerHTML=r.map(x=>`<div><span>${x[0]}</span>${x[1]}</div>`).join('')}
+const gm=$('#gm'),gx=gm.getContext('2d'),gg=$('#gg'),ggx=gg.getContext('2d');let gs={};
+function drawGM(){const w=gm.width,h=gm.height;if(w<10)return;const cs=Math.min(w/W,h/H),ox=(w-cs*W)/2,oy=(h-cs*H)/2,dp=devicePixelRatio||1;gs={cs,ox,oy};gx.clearRect(0,0,w,h);
+for(let j=0;j<H;j++)for(let i=0;i<W;i++){const k=j*W+i,x=ox+i*cs,y=oy+j*cs;if(known[k]){gx.fillStyle=solid[k]?'#9fb0ad':'rgba(98,182,200,.14)';gx.fillRect(x,y,cs-1,cs-1)}else{gx.fillStyle='rgba(120,140,148,.1)';gx.fillRect(x+cs/2-1,y+cs/2-1,2,2)}}
+gx.font=`${12*dp}px IBM Plex Mono`;ZN.forEach(z=>{gx.fillStyle='#8a9a9f';gx.fillText(z[0]+' '+zc(z).toFixed(0)+'%',ox+z[1]*cs,oy+cs*32.6)});
+const P=(x,y)=>[ox+x*cs,oy+y*cs];
+D.forEach((d,n)=>{const[x,y]=P(d.x,d.y);gx.strokeStyle=CL[n];gx.globalAlpha=.35;gx.setLineDash([5,5]);gx.beginPath();gx.arc(x,y,7*cs,0,7);gx.stroke();gx.setLineDash([]);gx.globalAlpha=1;
+gx.lineWidth=2*dp;gx.fillStyle='#12171a';gx.fillRect(x-cs*.6,y-cs*.6,cs*1.2,cs*1.2);gx.strokeRect(x-cs*.6,y-cs*.6,cs*1.2,cs*1.2);gx.fillStyle=CL[n];gx.fillText('UAV-'+(n+1),x+cs,y-cs*.7)});
+PT.forEach(t=>{if(t.seen===null)return;gx.strokeStyle='#d2583f';gx.fillStyle='#d2583f';gx.lineWidth=2*dp;gx.globalAlpha=.6;gx.beginPath();t.tr.forEach((q,i)=>{const p=P(q[0],q[1]);i?gx.lineTo(...p):gx.moveTo(...p)});gx.stroke();gx.globalAlpha=1;
+const[x,y]=P(t.det?t.x:t.lx,t.det?t.y:t.ly),r=cs*.8;gx.globalAlpha=t.det?1:.45;gx.beginPath();gx.moveTo(x,y-r);gx.lineTo(x+r,y);gx.lineTo(x,y+r);gx.lineTo(x-r,y);gx.closePath();gx.fill();
+if(t.det){D.forEach((d,n)=>{if(t.by===n){gx.strokeStyle=CL[n];gx.lineWidth=1.5*dp;gx.beginPath();gx.moveTo(...P(d.x,d.y));gx.lineTo(x,y);gx.stroke()}})}
+gx.fillStyle='#d7ddd8';gx.fillText(t.id+' '+status(t),x+r+4,y+4);gx.globalAlpha=1});
+const e=ent(sel),[sx,sy]=P(e.x,e.y),b=cs*2;if(e.k!='zone'&&(e.k=='uav'||e.o.seen!==null)){gx.strokeStyle='#e3a72f';gx.lineWidth=2*dp;[[-1,-1],[1,-1],[1,1],[-1,1]].forEach(c=>{gx.beginPath();gx.moveTo(sx+c[0]*b,sy+c[1]*b*.4);gx.lineTo(sx+c[0]*b,sy+c[1]*b);gx.lineTo(sx+c[0]*b*.4,sy+c[1]*b);gx.stroke()})}
+$('#gmeta').textContent=`${PT.filter(t=>t.seen!==null).length} of 3 persons found · ${cov().toFixed(0)}% mapped`}
+gm.onclick=e=>{const r=gm.getBoundingClientRect(),k=gm.width/r.width,x=((e.clientX-r.left)*k-gs.ox)/gs.cs,y=((e.clientY-r.top)*k-gs.oy)/gs.cs;let b=null,bd=3;
+[...D.map((d,i)=>['UAV-'+(i+1),d.x,d.y]),...PT.filter(t=>t.seen!==null).map(t=>[t.id,t.x,t.y])].forEach(c=>{const q=Math.hypot(c[1]-x,c[2]-y);if(q<bd){bd=q;b=c[0]}});if(b){sel=b;tree();dets()}};
+const GN=()=>{const n=[];D.forEach((d,i)=>n.push({id:'UAV-'+(i+1),x:.13,y:.2+.3*i,c:CL[i]}));ZN.forEach((z,i)=>n.push({id:z[0],x:.5,y:.12+.25*i,c:'#8a9a9f'}));PT.forEach((t,i)=>n.push({id:t.id,x:.87,y:.2+.3*i,c:'#d2583f'}));return n};
+function drawGG(){const w=gg.width,h=gg.height,N=GN(),g=id=>N.find(n=>n.id===id),X=n=>n.x*w,Y=n=>n.y*h;ggx.clearRect(0,0,w,h);ggx.lineWidth=1.5;
+const L=(a,b,c,d)=>{ggx.strokeStyle=c;ggx.setLineDash(d||[]);ggx.beginPath();ggx.moveTo(X(g(a)),Y(g(a)));ggx.lineTo(X(g(b)),Y(g(b)));ggx.stroke();ggx.setLineDash([])};
+D.forEach((d,i)=>{const z=ZN.find(z=>d.x>=z[1]&&d.x<=z[2]);if(z)L('UAV-'+(i+1),z[0],'#33414a');D.forEach((o,j)=>{if(j>i&&Math.hypot(o.x-d.x,o.y-d.y)<30)L('UAV-'+(i+1),'UAV-'+(j+1),'#3b6670',[4,4])})});
+PT.forEach(t=>{if(t.det&&t.by!==null){ggx.lineWidth=3;L('UAV-'+(t.by+1),t.id,'#e3a72f');ggx.lineWidth=1.5}});
+N.forEach(n=>{const e=ent(n.id),hid=e.k=='person'&&e.o.seen===null;ggx.globalAlpha=hid?.25:1;ggx.fillStyle='#1a2125';ggx.strokeStyle=n.id===sel?'#e3a72f':n.c;ggx.lineWidth=n.id===sel?3:1.5;ggx.beginPath();ggx.arc(X(n),Y(n),17,0,7);ggx.fill();ggx.stroke();ggx.fillStyle='#d7ddd8';ggx.font='12px IBM Plex Mono';ggx.textAlign='center';ggx.fillText(n.id.replace('UAV-','U'),X(n),Y(n)+4);ggx.textAlign='left';ggx.globalAlpha=1});
+ggx.fillStyle='#8a9a9f';ggx.fillText('UAVs',X({x:.13})-14,16);ggx.fillText('Zones',X({x:.5})-16,16);ggx.fillText('Persons',X({x:.87})-24,16)}
+gg.onclick=e=>{const r=gg.getBoundingClientRect(),k=gg.width/r.width,x=(e.clientX-r.left)*k,y=(e.clientY-r.top)*k;const n=GN().find(n=>Math.hypot(n.x*gg.width-x,n.y*gg.height-y)<22);if(n){sel=n.id;tree();dets()}};
+function gvu(){const e=ent(sel),o=e.o,v=e.k=='person'?o.conf*100:e.k=='uav'?peers(o):zc(o);(HS[sel]=HS[sel]||[]).push(v);if(HS[sel].length>80)HS[sel].shift();
+const lo=0,hi=e.k=='uav'?50:100;line($('#gh'),HS[sel],'#e3a72f',lo,hi,e.k=='uav'?' cells':'%');$('#gev').innerHTML=GE.slice(-8).map(g=>`<div><b>T+${g[0].toFixed(0)}s</b> ${g[1]}</div>`).join('')||'<div>Waiting for the first contact.</div>';tree();dets()}
+/* source */
+const FS={'perception/lidar_sectors.py':`def sectors(scan):
+    n = len(scan.ranges)
+    third = n // 3
+    return Sectors(
+        left=min(scan.ranges[:third]),
+        front=min(scan.ranges[third:2 * third]),
+        right=min(scan.ranges[2 * third:]),
+    )`,'mapping/occupancy_grid.py':`class OccupancyGrid25D:
+    def integrate(self, pose, ranges):
+        for r, ang in ranges:
+            hit = project(pose, r, ang)
+            for cell in bresenham(pose.xy, hit.xy):
+                self.log_odds[cell] -= FREE_STEP
+            self.log_odds[hit.xy] += OCC_STEP
+            self.height[hit.xy] = max(self.height[hit.xy], hit.z)
+
+    def clear_ghosts(self, now):
+        stale = (now - self.last_hit) > GHOST_TTL
+        self.log_odds[stale & self.dynamic] = 0.0`,'planning/dynamic_astar.py':`import heapq, math
+
+def astar(grid, start, goal, inflate=2):
+    open_set = [(0.0, start)]
+    g, came = {start: 0.0}, {}
+    while open_set:
+        _, cur = heapq.heappop(open_set)
+        if cur == goal:
+            return rebuild(came, cur)
+        for nb in grid.neighbours(cur):
+            c = grid.cost(nb, inflate)
+            if c is None:
+                continue
+            step = g[cur] + math.dist(cur, nb) * c
+            if step < g.get(nb, 1e9):
+                g[nb], came[nb] = step, cur
+                heapq.heappush(open_set, (step + math.dist(nb, goal), nb))
+    return None`,'control/offboard_fsm.py':`class OffboardFSM:
+    STATES = ("ARM", "TAKEOFF", "TRANSIT", "SCAN", "HOLD", "LAND")
+
+    def tick(self, pose, path, sectors):
+        if sectors.front < 0.8:
+            return self.enter("HOLD")
+        if self.state == "TRANSIT" and path.done(pose):
+            return self.enter("SCAN")
+        return self.publish_setpoint(path.next(pose))`,'bringup/swarm3.launch.py':`def generate_launch_description():
+    nodes = []
+    for i in (1, 2, 3):
+        ns = "uav%d" % i
+        nodes += [Node(package=p, executable=p + "_node", namespace=ns)
+                  for p in ("perception", "mapping", "planning", "control")]
+    return LaunchDescription(nodes)`,'worlds/corridor_rooms.sdf':`<sdf version="1.9">
+  <world name="corridor_rooms">
+    <!-- four rooms joined by narrow doorways -->
+    <include><uri>model://marcos_walls</uri></include>
+  </world>
+</sdf>`};
+const REPO_URL='';
+let cf='planning/dynamic_astar.py';
+function ftree(){const dirs={};Object.keys(FS).forEach(p=>{const[d,f]=p.split('/');(dirs[d]=dirs[d]||[]).push(f)});
+$('#ft').innerHTML=Object.keys(dirs).map(d=>`<div class="tr h"><span>${d}/</span></div>`+dirs[d].map(f=>`<button class="tr${cf==d+'/'+f?' on':''}" data-f="${d}/${f}" style="padding-left:34px"><span>${f}</span></button>`).join('')).join('');
+$('#fn').textContent=cf;$('#code').textContent=FS[cf]}
+$('#ft').addEventListener('click',e=>{const b=e.target.closest('[data-f]');if(b){cf=b.dataset.f;ftree()}});
+$('#cc').onclick=()=>{const b=$('#cc');(navigator.clipboard?navigator.clipboard.writeText(FS[cf]):Promise.reject()).then(()=>b.textContent='Copied').catch(()=>b.textContent='Copy blocked').finally(()=>setTimeout(()=>b.textContent='Copy file',1400))};
+$('#rl').textContent=REPO_URL||'Repository link not set. Add it to REPO_URL in marcos.html.';
+$('#rb').onclick=()=>REPO_URL?open(REPO_URL,'_blank'):alert('Set REPO_URL near the top of the Source script in marcos.html.');
+ftree();
+/* console controls */
+$('#cp').onclick=()=>{paused=!paused;$('#cp').textContent=paused?'Resume':'Pause'};
+$('#cs').onclick=()=>{speed=speed==1?2:speed==2?4:1;$('#cs').textContent='Speed '+speed+'x'};
+$('#cf').onclick=()=>{focus=(focus+1)%3;$('#cf').textContent='Focus UAV-'+(focus+1);$('#fl').textContent='UAV-'+(focus+1)+' · m to nearest obstacle'};
+$('#cr').onclick=()=>{ang=.7};
+let last=performance.now(),acc=0,f=0,ga=0;
+function tick(n){const dt=Math.min((n-last)/1000,.1);last=n;const e=paused?0:dt*speed;if(!RM||!f)step(RM?0:e);f++;
+if(cur==='home'){if(hc.width<10||f%120==1)fit(hc);drawHero();if(f%20==0)$('#hn').textContent=cov().toFixed(0)+'%'}
+else if(cur==='console'){if(!RM&&!paused)ang+=drag===null?.002:0;drawIso();acc+=dt;
+if(acc>.5||f<3){acc=0;if(!paused){hist.lat.push(380+Math.random()*120+(Math.random()<.1?90:0));hist.cov.push(cov());for(const k in hist)if(hist[k].length>80)hist[k].shift()}line($('#g1'),hist.lat,'#e3a72f',300,600,' ms');line($('#g2'),hist.cov,'#7fb069',0,100,'%');bars();panel();if(f%3==0&&!paused)logl()}}
+else if(cur==='godview'){if(gm.width<10||f%120==1)fit(gm);drawGM();drawGG();ga+=dt;if(ga>.5||f<3){ga=0;gvu()}}
+requestAnimationFrame(tick)}
+for(let i=0;i<400;i++)step(.1);sim=0;warm=false;PT.forEach(t=>{t.conf=0;t.tr=[];t.seen=null});go(location.hash.slice(1));requestAnimationFrame(tick);
+</script></body></html>
